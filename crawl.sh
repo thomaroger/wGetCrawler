@@ -37,14 +37,17 @@ inArray() {
 # $1 string url
 function crawl ()
 {
-    INTERNALSLINKS[${#INTERNALSLINKS[@]}]=$host$link
+    INTERNALSLINKS[${#INTERNALSLINKS[@]}]=$1
     links=`wget --quiet -O - $1 | grep -o '<a href=['"'"'"][^"'"'"']*['"'"'"]' | sed -e 's/^<a href=["'"'"']//' -e 's/["'"'"']$//'`
 
     for link in $links
     do
-        echo "$link" | grep -q "^http"
         if grep -q "^http" <<< "$link" ; then
-            inArray EXTERNALSLINKS $link && EXTERNALSLINKS[${#EXTERNALSLINKS[@]}]=$link
+            if grep -q "^$host" <<< "$link" ; then
+                inArray INTERNALSLINKS $link && crawl $link 
+            else
+                inArray EXTERNALSLINKS $link && EXTERNALSLINKS[${#EXTERNALSLINKS[@]}]=$link
+            fi
         else
             inArray INTERNALSLINKS $host$link && crawl $host$link 
         fi
