@@ -7,22 +7,30 @@
 
 #!/bin/sh
 
+# Variable globale
+#EXTERNALSLINKS=
+#INTERNALSLINKS=
+
 # Fronction crawl
 
 function crawl ()
 {
     echo "crawl : "$1
+
     links=`wget --quiet -O - $1 | grep -o '<a href=['"'"'"][^"'"'"']*['"'"'"]' | sed -e 's/^<a href=["'"'"']//' -e 's/["'"'"']$//'`
 
     for link in $links
     do
         echo "$link" | grep -q "^http"
         if grep -q "^http" <<< "$link" ; then
-            echo $link
+            EXTERNALSLINKS[${#INTERNALSLINKS[@]}]=$link
         else
-            echo $1$link
+            INTERNALSLINKS[${#INTERNALSLINKS[@]}]=$1$link
         fi
-    done;    
+#        echo $link
+    done;
+
+    
 }
 
 
@@ -35,12 +43,17 @@ fi
 
 echo "HOST : "$1
 
-arguments[0]=$1
-arguments[1]=$1
-arguments[2]=
-arguments[3]= 
+crawl $1
 
-crawl $arguments
+echo "EXTERNALSLINKS"
+for link in "${EXTERNALSLINKS[@]}"
+do 
+    echo $link
+done
 
-
+echo "INTERNALSLINKS"
+for link in "${INTERNALSLINKS[@]}"
+do 
+    echo $link
+done
 
