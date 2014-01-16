@@ -43,13 +43,8 @@ function crawl ()
             EXTERNALSLINKS[${#INTERNALSLINKS[@]}]=$link
         else
             inArray INTERNALSLINKS $1$link && echo "duplicate url "$1$url || INTERNALSLINKS[${#INTERNALSLINKS[@]}]=$1$link 
-
-            
         fi
-#        echo $link
     done;
-
-    
 }
 
 
