@@ -7,11 +7,9 @@
 
 #!/bin/sh
 
-# Variable globale
-#EXTERNALSLINKS=
-#INTERNALSLINKS=
-
-# Fonction in array
+# Fonction inArray
+# $1 tableau
+# $2 valeur a chercher
 inArray() {
     local haystack=${1}[@]
     local needle=${2}
@@ -24,8 +22,8 @@ inArray() {
 }
 declare -a vpsservers=("vps1" "vps2" "vps3" "vps4" "vps6");
 #inArray vpsservers vps3 && echo "found" || echo "not found"
-ret=`inArray $vpsservers 'vps3'`
-echo $ret
+#ret=`inArray $vpsservers 'vps3'`
+#echo $ret
 
 
 
