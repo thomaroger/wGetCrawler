@@ -11,8 +11,25 @@
 #EXTERNALSLINKS=
 #INTERNALSLINKS=
 
-# Fronction crawl
+# Fonction in array
+inArray() {
+    local haystack=${1}[@]
+    local needle=${2}
+    for i in ${!haystack}; do
+        if [[ ${i} == ${needle} ]]; then
+            return 0
+        fi
+    done
+    return 1
+}
+declare -a vpsservers=("vps1" "vps2" "vps3" "vps4" "vps6");
+#inArray vpsservers vps3 && echo "found" || echo "not found"
+ret=`inArray $vpsservers 'vps3'`
+echo $ret
 
+
+
+# Fronction crawl
 function crawl ()
 {
     echo "crawl : "$1
@@ -25,7 +42,9 @@ function crawl ()
         if grep -q "^http" <<< "$link" ; then
             EXTERNALSLINKS[${#INTERNALSLINKS[@]}]=$link
         else
-            INTERNALSLINKS[${#INTERNALSLINKS[@]}]=$1$link
+            inArray INTERNALSLINKS $1$link && echo "duplicate url "$1$url || INTERNALSLINKS[${#INTERNALSLINKS[@]}]=$1$link 
+
+            
         fi
 #        echo $link
     done;
