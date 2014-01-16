@@ -26,10 +26,10 @@ inArray() {
     local needle=${2}
     for i in ${!haystack}; do
         if [[ ${i} == ${needle} ]]; then
-            return 0
+            return 1
         fi
     done
-    return 1
+    return 0
 }
 
 
@@ -37,7 +37,6 @@ inArray() {
 # $1 string url
 function crawl ()
 {
-    echo "crawl : "$1
     INTERNALSLINKS[${#INTERNALSLINKS[@]}]=$host$link
     links=`wget --quiet -O - $1 | grep -o '<a href=['"'"'"][^"'"'"']*['"'"'"]' | sed -e 's/^<a href=["'"'"']//' -e 's/["'"'"']$//'`
 
@@ -45,27 +44,27 @@ function crawl ()
     do
         echo "$link" | grep -q "^http"
         if grep -q "^http" <<< "$link" ; then
-            inArray EXTERNALSLINKS $link && echo "duplicate url "$link || EXTERNALSLINKS[${#EXTERNALSLINKS[@]}]=$link
+            inArray EXTERNALSLINKS $link && EXTERNALSLINKS[${#EXTERNALSLINKS[@]}]=$link
         else
-            inArray INTERNALSLINKS $host$link && echo "duplicate url "$1$link || crawl $host$link 
+            inArray INTERNALSLINKS $host$link && crawl $host$link 
         fi
     done;
 }
 
-
-echo "HOST : "$1
-
+T="$(date +%s)"
 crawl $1
 
-echo "EXTERNALSLINKS"
+echo "Externals links for $host : "
 for link in "${EXTERNALSLINKS[@]}"
 do 
     echo $link
 done
 
-echo "INTERNALSLINKS"
+echo "Internals links for $host :"
 for link in "${INTERNALSLINKS[@]}"
 do 
     echo $link
 done
 
+T="$(($(date +%s)-T))"
+echo "executed time : ${T} seconds"
