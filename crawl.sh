@@ -8,8 +8,8 @@
 #!/bin/sh
 
 # Fonction inArray
-# $1 tableau
-# $2 valeur a chercher
+# $1 array tableau
+# $2 string valeur a chercher
 inArray() {
     local haystack=${1}[@]
     local needle=${2}
@@ -20,14 +20,15 @@ inArray() {
     done
     return 1
 }
-declare -a vpsservers=("vps1" "vps2" "vps3" "vps4" "vps6");
-#inArray vpsservers vps3 && echo "found" || echo "not found"
-#ret=`inArray $vpsservers 'vps3'`
-#echo $ret
+# declare -a vpsservers=("vps1" "vps2" "vps3" "vps4" "vps6");
+# inArray vpsservers vps3 && echo "found" || echo "not found"
+# ret=`inArray $vpsservers 'vps3'`
+# echo $ret
 
 
 
 # Fronction crawl
+# $1 string url
 function crawl ()
 {
     echo "crawl : "$1
