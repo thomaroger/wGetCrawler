@@ -7,6 +7,17 @@
 
 #!/bin/sh
 
+
+#Passage en argument de l'url
+if [ $# -ne 1 ]
+then
+echo Usage: $0 host
+exit 1
+fi
+
+host=$1
+
+
 # Fonction inArray
 # $1 array tableau
 # $2 string valeur a chercher
@@ -20,11 +31,6 @@ inArray() {
     done
     return 1
 }
-# declare -a vpsservers=("vps1" "vps2" "vps3" "vps4" "vps6");
-# inArray vpsservers vps3 && echo "found" || echo "not found"
-# ret=`inArray $vpsservers 'vps3'`
-# echo $ret
-
 
 
 # Fronction crawl
@@ -32,27 +38,20 @@ inArray() {
 function crawl ()
 {
     echo "crawl : "$1
-
+    INTERNALSLINKS[${#INTERNALSLINKS[@]}]=$host$link
     links=`wget --quiet -O - $1 | grep -o '<a href=['"'"'"][^"'"'"']*['"'"'"]' | sed -e 's/^<a href=["'"'"']//' -e 's/["'"'"']$//'`
 
     for link in $links
     do
         echo "$link" | grep -q "^http"
         if grep -q "^http" <<< "$link" ; then
-            EXTERNALSLINKS[${#INTERNALSLINKS[@]}]=$link
+            inArray EXTERNALSLINKS $link && echo "duplicate url "$link || EXTERNALSLINKS[${#EXTERNALSLINKS[@]}]=$link
         else
-            inArray INTERNALSLINKS $1$link && echo "duplicate url "$1$url || INTERNALSLINKS[${#INTERNALSLINKS[@]}]=$1$link 
+            inArray INTERNALSLINKS $host$link && echo "duplicate url "$1$link || crawl $host$link 
         fi
     done;
 }
 
-
-#Passage en argument de l'url
-if [ $# -ne 1 ]
-then
-echo Usage: $0 host
-exit 1
-fi
 
 echo "HOST : "$1
 
