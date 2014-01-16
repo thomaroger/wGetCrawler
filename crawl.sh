@@ -1,8 +1,8 @@
 #------------------------------------------------------
-# Description : Affiche les connexions locales d'une personne
+# Description : Affiche les hrefs internes et externes d'un site
 # Auteur  : troger
 # Date : 16/01/014
-# Version : 1.0
+# Version : 0.1
 #------------------------------------------------------
 
 #!/bin/sh
