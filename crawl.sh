@@ -37,6 +37,7 @@ inArray() {
 # $1 string url
 function crawl ()
 {
+    #echo $1
     INTERNALSLINKS[${#INTERNALSLINKS[@]}]=$1
     links=`wget --quiet -O - $1 | grep -o '<a href=['"'"'"][^"'"'"']*['"'"'"]' | sed -e 's/^<a href=["'"'"']//' -e 's/["'"'"']$//'`
 
