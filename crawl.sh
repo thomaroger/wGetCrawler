@@ -53,9 +53,9 @@ function crawl ()
     wget --quiet -O - $1 > wgetResult.tmp
     links=`cat wgetResult.tmp | grep -o '<a href=['"'"'"][^"'"'"']*['"'"'"]' | sed -e 's/^<a href=["'"'"']//' -e 's/["'"'"']$//'`
     title=`cat wgetResult.tmp | sed -n -e 's!.*<title>\(.*\)</title>.*!\1!p'`
-    keywords=`cat wgetResult.tmp | grep -o '<meta name="keywords" content=".*" />' | sed  -e 's/.*<meta name="robots" content="//' -e 's/" \/>.*//'`
-    description=`cat wgetResult.tmp | grep -o '<meta name="description" content=".*" />' | sed  -e 's/.*<meta name="robots" content="//' -e 's/" \/>.*//'`
-    h1=`cat wgetResult.tmp | grep -o '<h1>.*</h1>' | sed  -e 's/.*<h1>//' -e 's/<\/h1>.*//'`
+    keywords=`cat wgetResult.tmp | grep -o '<meta name="keywords" content=".*" />' | sed  -e 's/.*<meta name="keywords" content="//' -e 's/" \/>.*//'`
+    description=`cat wgetResult.tmp | grep -o '<meta name="description" content=".*" />' | sed  -e 's/.*<meta name="description" content="//' -e 's/" \/>.*//'`
+    h1=`cat wgetResult.tmp | grep -o '<h1>.*</h1>' | sed  -e 's/.*<h1>//' -e 's/<\/h1>.*//'` 
     h2=`cat wgetResult.tmp | grep -o '<h2>.*</h2>' | sed  -e 's/.*<h2>//' -e 's/<\/h2>.*//'`
     h3=`cat wgetResult.tmp | grep -o '<h3>.*</h3>' | sed  -e 's/.*<h3>//' -e 's/<\/h3>.*//'`
     h4=`cat wgetResult.tmp | grep -o '<h4>.*</h4>' | sed  -e 's/.*<h4>//' -e 's/<\/h4>.*//'`
