@@ -62,7 +62,18 @@ function crawl ()
     h5=`cat wgetResult.tmp | grep -o '<h5>.*</h5>' | sed  -e 's/.*<h5>//' -e 's/<\/h5>.*//'`
     h6=`cat wgetResult.tmp | grep -o '<h6>.*</h6>' | sed  -e 's/.*<h6>//' -e 's/<\/h6>.*//'`
     
-    echo "$1;$title;$keywords;$description;$h1;$h2;$h3;$h4;$h5;$h6" >> result.csv
+    echo "URL : "$1 >> result.txt
+    echo "TITRE : "$title >> result.txt
+    echo "KEYWORDS : "$keywords >> result.txt
+    echo "DESCRIPTION : "$description >> result.txt
+    echo "H1 :"$h1 >> result.txt
+    echo "H2 :"$h2 >> result.txt
+    echo "H3 :"$h3 >> result.txt
+    echo "H4 :"$h4 >> result.txt
+    echo "H5 :"$h5 >> result.txt
+    echo "H6 :"$h6 >> result.txt
+    echo "" >> result.txt
+    echo "" >> result.txt
     rm wgetResult.tmp
 
     for link in $links
@@ -80,8 +91,7 @@ function crawl ()
 }
 
 T="$(date +%s)"
-rm result.csv
-echo "host;Title;keywords;Description;h1;h2;h3;h4;h5;h6" >> result.csv
+rm result.txt
 crawl $1
 
 echo "Externals links for $host : "
