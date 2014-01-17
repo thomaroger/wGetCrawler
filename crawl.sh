@@ -9,10 +9,17 @@
 
 
 #Passage en argument de l'url
-if [ $# -ne 1 ]
+debug=1
+
+if [[ $# != 2 ]]; 
 then
-echo Usage: $0 host
-exit 1
+    if [[ $# != 1 ]];
+    then
+        echo Usage: $0 host [-v]
+        exit 1
+    else
+        debug=0
+    fi
 fi
 
 host=$1
@@ -37,9 +44,26 @@ inArray() {
 # $1 string url
 function crawl ()
 {
-    #echo $1
+    if [[ $debug == 1 ]]; 
+    then
+        echo $1
+    fi
     INTERNALSLINKS[${#INTERNALSLINKS[@]}]=$1
-    links=`wget --quiet -O - $1 | grep -o '<a href=['"'"'"][^"'"'"']*['"'"'"]' | sed -e 's/^<a href=["'"'"']//' -e 's/["'"'"']$//'`
+
+    wget --quiet -O - $1 > wgetResult.tmp
+    links=`cat wgetResult.tmp | grep -o '<a href=['"'"'"][^"'"'"']*['"'"'"]' | sed -e 's/^<a href=["'"'"']//' -e 's/["'"'"']$//'`
+    title=`cat wgetResult.tmp | sed -n -e 's!.*<title>\(.*\)</title>.*!\1!p'`
+    keywords=`cat wgetResult.tmp | grep -o '<meta name="keywords" content=".*" />' | sed  -e 's/.*<meta name="robots" content="//' -e 's/" \/>.*//'`
+    description=`cat wgetResult.tmp | grep -o '<meta name="description" content=".*" />' | sed  -e 's/.*<meta name="robots" content="//' -e 's/" \/>.*//'`
+    h1=`cat wgetResult.tmp | grep -o '<h1>.*</h1>' | sed  -e 's/.*<h1>//' -e 's/<\/h1>.*//'`
+    h2=`cat wgetResult.tmp | grep -o '<h2>.*</h2>' | sed  -e 's/.*<h2>//' -e 's/<\/h2>.*//'`
+    h3=`cat wgetResult.tmp | grep -o '<h3>.*</h3>' | sed  -e 's/.*<h3>//' -e 's/<\/h3>.*//'`
+    h4=`cat wgetResult.tmp | grep -o '<h4>.*</h4>' | sed  -e 's/.*<h4>//' -e 's/<\/h4>.*//'`
+    h5=`cat wgetResult.tmp | grep -o '<h5>.*</h5>' | sed  -e 's/.*<h5>//' -e 's/<\/h5>.*//'`
+    h6=`cat wgetResult.tmp | grep -o '<h6>.*</h6>' | sed  -e 's/.*<h6>//' -e 's/<\/h6>.*//'`
+    
+    echo "$1;$title;$keywords;$description;$h1;$h2;$h3;$h4;$h5;$h6" >> result.csv
+    rm wgetResult.tmp
 
     for link in $links
     do
@@ -56,6 +80,8 @@ function crawl ()
 }
 
 T="$(date +%s)"
+rm result.csv
+echo "host;Title;keywords;Description;h1;h2;h3;h4;h5;h6" >> result.csv
 crawl $1
 
 echo "Externals links for $host : "
