@@ -48,63 +48,67 @@ function crawl ()
     then
         echo $1
     fi
-    INTERNALSLINKS[${#INTERNALSLINKS[@]}]=$1
+    internalslinks[${#internalslinks[@]}]=$1
 
-    wget --quiet -O - $1 > wgetResult.tmp
-    links=`cat wgetResult.tmp | grep -o '<a href=['"'"'"][^"'"'"']*['"'"'"]' | sed -e 's/^<a href=["'"'"']//' -e 's/["'"'"']$//'`
-    title=`cat wgetResult.tmp | sed -n -e 's!.*<title>\(.*\)</title>.*!\1!p'`
-    keywords=`cat wgetResult.tmp | grep -o '<meta name="keywords" content=".*" />' | sed  -e 's/.*<meta name="keywords" content="//' -e 's/" \/>.*//'`
-    description=`cat wgetResult.tmp | grep -o '<meta name="description" content=".*" />' | sed  -e 's/.*<meta name="description" content="//' -e 's/" \/>.*//'`
-    h1=`cat wgetResult.tmp | grep -o '<h1>.*</h1>' | sed  -e 's/.*<h1>//' -e 's/<\/h1>.*//'` 
-    h2=`cat wgetResult.tmp | grep -o '<h2>.*</h2>' | sed  -e 's/.*<h2>//' -e 's/<\/h2>.*//'`
-    h3=`cat wgetResult.tmp | grep -o '<h3>.*</h3>' | sed  -e 's/.*<h3>//' -e 's/<\/h3>.*//'`
-    h4=`cat wgetResult.tmp | grep -o '<h4>.*</h4>' | sed  -e 's/.*<h4>//' -e 's/<\/h4>.*//'`
-    h5=`cat wgetResult.tmp | grep -o '<h5>.*</h5>' | sed  -e 's/.*<h5>//' -e 's/<\/h5>.*//'`
-    h6=`cat wgetResult.tmp | grep -o '<h6>.*</h6>' | sed  -e 's/.*<h6>//' -e 's/<\/h6>.*//'`
-    
+    wget --quiet -O - $1 > ./data/wgetResult.tmp
+    links=`cat ./data/wgetResult.tmp | grep -o '<a href=['"'"'"][^"'"'"']*['"'"'"]' | sed -e 's/^<a href=["'"'"']//' -e 's/["'"'"']$//'`
+    title=`cat ./data/wgetResult.tmp | sed -n -e 's!.*<title>\(.*\)</title>.*!\1!p'`
+    keywords=`cat ./data/wgetResult.tmp | grep -o '<meta name="keywords" content=".*".*/>' | sed  -e 's/.*<meta name="keywords" content="//' -e 's/" \/>.*//' -e 's/"\/>.*//'` 
+    description=`cat ./data/wgetResult.tmp | grep -o '<meta name="description" content=".*".*/>' | sed  -e 's/.*<meta name="description" content="//' -e 's/" \/>.*//' -e 's/"\/>.*//'`
+    h1=`cat ./data/wgetResult.tmp | grep -o '<h1>.*</h1>' | sed  -e 's/.*<h1>//' -e 's/<\/h1>.*/ | /'` 
+    h2=`cat ./data/wgetResult.tmp | grep -o '<h2>.*</h2>' | sed  -e 's/.*<h2>//' -e 's/<\/h2>.*/ | /'`
+    h3=`cat ./data/wgetResult.tmp | grep -o '<h3>.*</h3>' | sed  -e 's/.*<h3>//' -e 's/<\/h3>.*/ | /'`
+    h4=`cat ./data/wgetResult.tmp | grep -o '<h4>.*</h4>' | sed  -e 's/.*<h4>//' -e 's/<\/h4>.*/ | /'`
+    h5=`cat ./data/wgetResult.tmp | grep -o '<h5>.*</h5>' | sed  -e 's/.*<h5>//' -e 's/<\/h5>.*/ | /'`
+    h6=`cat ./data/wgetResult.tmp | grep -o '<h6>.*</h6>' | sed  -e 's/.*<h6>//' -e 's/<\/h6>.*/ | /'` 
+    as=`cat ./data/wgetResult.tmp | grep -o '<a href=".*".*</a>' | sed -e 's/<\/a>.*/ | /' -e 's/<a.*>//'`
+
     echo "URL : "$1 >> result.txt
     echo "TITRE : "$title >> result.txt
     echo "KEYWORDS : "$keywords >> result.txt
     echo "DESCRIPTION : "$description >> result.txt
-    echo "H1 :"$h1 >> result.txt
-    echo "H2 :"$h2 >> result.txt
-    echo "H3 :"$h3 >> result.txt
-    echo "H4 :"$h4 >> result.txt
-    echo "H5 :"$h5 >> result.txt
-    echo "H6 :"$h6 >> result.txt
+    echo "H1 : "$h1 >> result.txt
+    echo "H2 : "$h2 >> result.txt
+    echo "H3 : "$h3 >> result.txt
+    echo "H4 : "$h4 >> result.txt
+    echo "H5 : "$h5 >> result.txt
+    echo "H6 : "$h6 >> result.txt
+    echo "TEXTE DE LIEN : "$as >> result.txt
     echo "" >> result.txt
     echo "" >> result.txt
-    rm wgetResult.tmp
-
+    
     for link in $links
     do
         if grep -q "^http" <<< "$link" ; then
             if grep -q "^$host" <<< "$link" ; then
-                inArray INTERNALSLINKS $link && crawl $link 
+                inArray internalslinks $link && crawl $link 
             else
-                inArray EXTERNALSLINKS $link && EXTERNALSLINKS[${#EXTERNALSLINKS[@]}]=$link
+                inArray externalslinks $link && externalslinks[${#externalslinks[@]}]=$link
             fi
         else
-            inArray INTERNALSLINKS $host$link && crawl $host$link 
+            inArray internalslinks $host$link && crawl $host$link 
         fi
     done;
 }
 
 T="$(date +%s)"
-rm result.txt
+rm -f result.txt
+mkdir data
 crawl $1
 
 echo "Externals links for $host : "
-for link in "${EXTERNALSLINKS[@]}"
+for link in "${externalslinks[@]}"
 do 
     echo $link
 done
 
 echo "Internals links for $host :"
-for link in "${INTERNALSLINKS[@]}"
+for link in "${internalslinks[@]}"
 do 
     echo $link
 done
 
+
+rm -rf data
 T="$(($(date +%s)-T))"
 echo "executed time : ${T} seconds"
